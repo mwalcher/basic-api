@@ -14,16 +14,38 @@ const initialState = {
 };
 
 export const getUsers = dispatch => () => {
+    dispatch({
+        type: API_LOADING,
+        isLoading: true
+    });
+
     axios({
         url: userAPI,
-        method: 'get'
+        method: 'get',
+        params: {
+            results: 4
+        }
     })
     .then(response => {
-        console.log('data',response.data.results);
+        dispatch({
+            type: API_UPDATE,
+            response: {
+                users: response.data.results
+            }
+        });
     })
     .catch(error => {
-        console.log(error);
+        dispatch({
+            type: API_ERROR,
+            hasError: true
+        });
     })
+    .then(() => {
+        dispatch({
+            type: API_LOADING,
+            isLoading: false
+        });
+    });
 };
 
 export default (state = initialState, action = {}) => {
@@ -43,7 +65,7 @@ export default (state = initialState, action = {}) => {
         case API_UPDATE:
             return {
                 ...state,
-                response
+                ...response
             };
         case API_ERROR:
             return {
