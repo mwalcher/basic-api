@@ -9,5 +9,5 @@ import reducer from '../reducers';
 
 export default createStore(
     reducer,
-    compose(applyMiddleware(thunk, reduxPackMiddleware))
+    compose(applyMiddleware(thunk, reduxPackMiddleware), window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__())
 );

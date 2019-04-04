@@ -4,7 +4,10 @@ const API_UPDATE = 'API_UPDATE';
 const API_ERROR = 'API_ERROR';
 
 // Default State
-const initialState = {};
+const initialState = {
+    isLoading: false,
+    hasError: false
+};
 
 export default (state = initialState, action = {}) => {
     const {
