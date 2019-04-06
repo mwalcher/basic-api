@@ -1,57 +1,97 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { getUsers } from '../reducers/api';
+import { getImage } from '../reducers/api';
 
 class App extends Component {
-    componentWillMount() {
+    constructor (props) {
+        super(props);
+
+        this.state = {
+            imageQuery: ''
+        };
+    }
+
+    componentWillMount(){
+        this.timer = null;
+    }
+
+    getQuery(value){
+        clearTimeout(this.timer);
+
+        this.setState({
+            imageQuery: value
+        });
+
+        this.timer = setTimeout(() => this.searchImage(value), 1000);
+    }
+
+    searchImage(query){
         const {
             props: {
-                getUsers
+                getImage
             }
         } = this;
 
-        getUsers();
+        getImage(query);
     }
 
     render() {
         const {
             props: {
-                users,
-                apiLoading
+                apiLoading,
+                apiImage,
+                apiError
+            },
+            state: {
+                imageQuery
             }
         } = this;
 
         return (
             <div className="app">
-                <h1>React App</h1>
-                {
-                    apiLoading &&
-                    <p>Loading</p>
-                }
-                {
-                    users && users.length > 0 &&
-                    users.map((user, index) => (
-                        <p key={`${user.nat}-${index}`}>{user.name.first} {user.name.last}</p>
-                    ))
-                }
+            <h1>React App</h1>
+            {
+                apiLoading &&
+                <p>Loading</p>
+            }
+            {
+                !apiLoading && apiError &&
+                <p>Please try your search again</p>
+            }
+            <form className='searchInput'>
+            <label htmlFor='search'>Search</label>
+            <input
+                id='search'
+                type='text'
+                onChange={(event) => this.getQuery(event.target.value)}
+            />
+            <button
+                type='button'
+                onClick={() => this.searchImage(imageQuery)}
+            >Search</button>
+            </form>
+            {
+                apiImage &&
+                <img src={apiImage} alt='Test'/>
+            }
             </div>
         );
     }
 }
 
 const mapStateToProps = ({ api }) => ({
-    users: api.users,
+    apiImage: api.image,
     apiLoading: api.isLoading,
     apiError: api.hasError
 });
 
 const mapDispathToProps = dispatch => ({
-    getUsers: () => dispatch(getUsers)
+    getImage: () => dispatch(getImage)
 });
 
 const mergeProps = (stateProps, dispatchProps, ownProps) => ({
     ...stateProps,
-    getUsers: dispatchProps.getUsers(),
+    getImage: dispatchProps.getImage(),
     ...ownProps
 });
 

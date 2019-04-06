@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const userAPI = 'https://randomuser.me/api/';
+const userAPI = process.env.REACT_APP_API_URL;
 
 // Actions
 const API_LOADING = 'API_LOADING';
@@ -13,7 +13,7 @@ const initialState = {
     hasError: false
 };
 
-export const getUsers = dispatch => () => {
+export const getImage = dispatch => queryValue => {
     dispatch({
         type: API_LOADING,
         isLoading: true
@@ -23,14 +23,19 @@ export const getUsers = dispatch => () => {
         url: userAPI,
         method: 'get',
         params: {
-            results: 4
+            query: queryValue
         }
     })
     .then(response => {
         dispatch({
+            type: API_ERROR,
+            hasError: false
+        });
+
+        dispatch({
             type: API_UPDATE,
             response: {
-                users: response.data.results
+                image: response.data.image_url
             }
         });
     })
